@@ -9,7 +9,8 @@ class dictTest(ut.TestCase):
         for i in range(10):
             dct[i] = i
         for i in range(10):
-            self.assertEqual(dct[i], i, "The " + i + " element should be itself, not " + dct[i])
+            self.assertEqual(dct[i], i, "The " + str(i) +
+                             " element should be itself, not " + str(dct[i]))
 
 
 if __name__ == '__main__':

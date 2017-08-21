@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cdusold/DriveLink.png?branch=master)](https://travis-ci.org/cdusold/DriveLink)
+[![Build Status](https://travis-ci.org/cdusold/DriveLink.png)](https://travis-ci.org/cdusold/DriveLink)
 
 About
 =====

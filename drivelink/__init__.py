@@ -9,6 +9,6 @@ structures for semi-big data, where it isn't large enough to warrant more
 big data centric solutions.
 
 """
-from DriveLink._diskdict import Dict
-from DriveLink._disklist import List
-from DriveLink._ordereddiskdict import OrderedDict
+from drivelink._diskdict import Dict
+from drivelink._disklist import List
+from drivelink._ordereddiskdict import OrderedDict

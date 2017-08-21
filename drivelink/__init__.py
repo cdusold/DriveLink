@@ -1,5 +1,5 @@
 """
-.. moduleauthor:: Chris Dusold <PySpeedup@chrisdusold.com>
+.. moduleauthor:: Chris Dusold <DriveLink@chrisdusold.com>
 
 A module containing storage classes that maintain small RAM usage and original structure access order.
 
@@ -9,6 +9,6 @@ structures for semi-big data, where it isn't large enough to warrant more
 big data centric solutions.
 
 """
-from pyspeedup.memory._diskdict import DiskDict
-from pyspeedup.memory._disklist import DiskList
-from pyspeedup.memory._ordereddiskdict import OrderedDiskDict
+from DriveLink._diskdict import Dict
+from DriveLink._disklist import List
+from DriveLink._ordereddiskdict import OrderedDict

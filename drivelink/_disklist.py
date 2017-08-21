@@ -19,7 +19,7 @@ def _exitgracefully(self):
             self._save_page_to_disk(key)
 class _page(list):
     pass
-class DiskList(MutableSequence):
+class List(MutableSequence):
     """
     A list class that maintains O(k) look up and O(1) append while keeping RAM usage O(1) as well.
     Unfortunately, insert is O(n/k).
@@ -34,7 +34,7 @@ class DiskList(MutableSequence):
 
     There are two ways to initialize this object, as a standard object:
 
-        >>> diskList = DiskList("sample")
+        >>> diskList = List("sample")
         >>> for i in range(10):
         ...     diskList.append(i)
         ...
@@ -48,14 +48,14 @@ class DiskList(MutableSequence):
 
     Or through context:
 
-        >>> with DiskList("test") as d:
+        >>> with List("test") as d:
         ...     for i in range(10):
         ...         d.append(i)
         ...     print(d[3])
         3
 
     If there is a way to break list like behavior and you can reproduce it, please
-    report it to `the GitHub issues <https://github.com/cdusold/PySpeedup/issues/>`_.
+    report it to `the GitHub issues <https://github.com/cdusold/DriveLink/issues/>`_.
 
     .. note:: This class is not thread safe, nor is it process safe. Any multithreaded
               or multiprocessed uses of this class holds no guarantees of accuracy.
@@ -63,7 +63,7 @@ class DiskList(MutableSequence):
     You can configure how this class stores things in a few ways.
 
     The file_basename parameter allows you to keep multiple different stored objects
-    in the same file_location, which defaults to .PySpeedup in the user's home folder.
+    in the same file_location, which defaults to .DriveLink in the user's home folder.
     Using a file_basename of the empty string may cause a small slowdown if more
     than just this object's files are in the folder. Using a file_location of the
     empty string will result in files being placed in the environment's current
@@ -79,7 +79,7 @@ class DiskList(MutableSequence):
     Even with the somewhat low defaults, this will beat out relying on python to
     use swap space.
     """
-    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),".PySpeedup")):
+    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),".DriveLink")):
         if max_pages < 1:
             raise ValueError("There must be allowed at least one page in RAM.")
         self.max_pages = max_pages
@@ -225,7 +225,7 @@ class DiskList(MutableSequence):
     def __str__(self):
         return "List with values stored to "+self._file_base
     def __repr__(self):
-        return "DiskList().link_to_disk('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
+        return "List().link_to_disk('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
     def __contains__(self, item):
         try:
             i,k = self._finditem(key)
@@ -263,7 +263,7 @@ class DiskList(MutableSequence):
 
 
 if __name__ == '__main__':
-    d = DiskList('testDiskList',2,2)
+    d = List('testList',2,2)
     while len(d):
         d.pop()
     for i in range(16):

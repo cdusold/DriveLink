@@ -19,14 +19,14 @@ def _exitgracefully(self):
             self._save_page_to_disk(key)
 class _page(dict):
     pass
-class OrderedDiskDict(MutableMapping):
+class OrderedDict(MutableMapping):
     """
     A dictionary class that maintains O(1) look up and write while keeping RAM usage O(1) as well.
 
     This is accomplished through a rudimentary (for now) hashing scheme to page the
     dictionary into parts.
     """
-    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),"PySpeedup")):
+    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),".DriveLink")):
         if max_pages < 1:
             raise ValueError("There must be allowed at least one page in RAM.")
         self.max_pages = max_pages
@@ -166,7 +166,7 @@ class OrderedDiskDict(MutableMapping):
     def __str__(self):
         return "Dictionary with values stored to "+self._file_base
     def __repr__(self):
-        return "DiskDict().link_to_disk('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
+        return "Dict().link_to_disk('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
     def __contains__(self, item):
         i,k = self._finditem(item)
         return k in self.pages[i]
@@ -177,7 +177,7 @@ class OrderedDiskDict(MutableMapping):
 
 
 if __name__ == '__main__':
-    d = DiskDict('testDiskDict',2,2)
+    d = Dict('testDict',2,2)
     for i in range(16):
         d[i/10.]=i
         print(d.pages)

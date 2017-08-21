@@ -18,4 +18,9 @@ python:
 install:
   - pip install .
   - pip install -r requirements.txt
-script: python -m pytest
+script:
+  - python -m pytest
+  - python -m doctest drivelink/_diskdict.py
+  - python -m doctest drivelink/_disklist.py
+  - python -m doctest drivelink/_diskmemoize.py
+  - python -m doctest drivelink/_ordereddiskdict.py

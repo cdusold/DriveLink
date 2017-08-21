@@ -31,14 +31,14 @@ Introduction
 Disk Based Dictionary
 ---------------------
 
-.. autoclass:: DriveLink.DiskDict
+.. autoclass:: DriveLink.Dict
 
 Ordered Access Disk Based Dictionary
 ---------------------
 
-.. autoclass:: DriveLink.OrderedDiskDict
+.. autoclass:: DriveLink.OrderedDict
 
 Disk Based List
 ---------------
 
-.. autoclass:: DriveLink.DiskList
+.. autoclass:: DriveLink.List

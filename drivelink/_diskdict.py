@@ -19,7 +19,7 @@ def _exitgracefully(self):
             self._save_page_to_disk(key)
 class _page(dict):
     currentDepth=0
-class DiskDict(MutableMapping):
+class Dict(MutableMapping):
     """
     A dictionary class that maintains O(1) look up and write while keeping RAM usage O(1) as well.
 
@@ -33,7 +33,7 @@ class DiskDict(MutableMapping):
 
     There are two ways to initialize this object, as a standard object:
 
-        >>> diskDict = DiskDict("sample")
+        >>> diskDict = Dict("sample")
         >>> for i in range(10):
         ...     diskDict[i] = chr(97+i)
         ...
@@ -47,14 +47,14 @@ class DiskDict(MutableMapping):
 
     Or through context:
 
-        >>> with DiskDict("test") as d:
+        >>> with Dict("test") as d:
         ...     for i in range(10):
         ...         d[i] = chr(97+i)
         ...     print(d[3])
         3
 
     If there is a way to break dict like behavior and you can reproduce it, please
-    report it to `the GitHub issues <https://github.com/cdusold/PySpeedup/issues/>`_.
+    report it to `the GitHub issues <https://github.com/cdusold/DriveLink/issues/>`_.
 
     .. note:: This class is not thread safe, nor is it process safe. Any multithreaded
               or multiprocessed uses of this class holds no guarantees of accuracy.
@@ -62,7 +62,7 @@ class DiskDict(MutableMapping):
     You can configure how this class stores things in a few ways.
 
     The file_basename parameter allows you to keep multiple different stored objects
-    in the same file_location, which defaults to .PySpeedup in the user's home folder.
+    in the same file_location, which defaults to .DriveLink in the user's home folder.
     Using a file_basename of the empty string may cause a small slowdown if more
     than just this object's files are in the folder. Using a file_location of the
     empty string will result in files being placed in the environment's current
@@ -78,7 +78,7 @@ class DiskDict(MutableMapping):
     Even with the somewhat low defaults, this will beat out relying on python to
     use swap space.
     """
-    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),".PySpeedup")):
+    def __init__(self, file_basename, size_limit = 1024, max_pages = 16, file_location = join(expanduser("~"),".DriveLink")):
         if max_pages < 1:
             raise ValueError("There must be allowed at least one page in RAM.")
         self.max_pages = max_pages
@@ -238,7 +238,7 @@ class DiskDict(MutableMapping):
     def __str__(self):
         return "Dictionary with values stored to "+self._file_base
     def __repr__(self):
-        return "DiskDict('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
+        return "Dict('',"+str(self.size_limit)+','+str(self.max_pages)+','+self._file_base+')'
     def __contains__(self, item):
         i,k = self._finditem(item)
         return k in self.pages[i]
@@ -249,7 +249,7 @@ class DiskDict(MutableMapping):
 
 
 if __name__ == '__main__':
-    d = DiskDict('testDiskDict',2,2)
+    d = Dict('testDict',2,2)
     for i in range(16):
         d[i/10.]=i
         print(d.pages)

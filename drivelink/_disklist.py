@@ -15,7 +15,6 @@ def _exitgracefully(self):
     '''
     if self is None or not hasattr(self, "_save_page_to_disk"):
         return
-    import pickle
     while len(self.pages) > 0:
         for key in list(self.pages.keys()):
             self._save_page_to_disk(key)
@@ -105,9 +104,11 @@ class List(MutableSequence):
         self._length = 0
         self._number_of_pages = 0
         self._queue = []
+        # Just in case, cache pickle.
+        self._pickle = pickle
         try:
             with open(self._file_base + 'Len', 'rb') as f:
-                self._number_of_pages, self._length = pickle.load(f)
+                self._number_of_pages, self._length = self._pickle.load(f)
         except:
             pass
         atexit.register(_exitgracefully, self)
@@ -216,12 +217,12 @@ class List(MutableSequence):
 
     def _save_page_to_disk(self, number):
         with open(self._file_base + 'Len', 'wb') as f:
-            pickle.dump((self._number_of_pages, self._length), f)
+            self._pickle.dump((self._number_of_pages, self._length), f)
         if self._file_base:
             if number in self.pages:
                 if len(self.pages[number]) > 0:
                     with open(self._file_base + str(number), 'wb') as f:
-                        pickle.dump(self.pages[number], f)
+                        self._pickle.dump(self.pages[number], f)
                 else:
                     self._number_of_pages -= 1
                 del self.pages[number]
@@ -234,7 +235,7 @@ class List(MutableSequence):
         if self._file_base:
             try:
                 with open(self._file_base + str(number), 'rb') as f:
-                    self.pages[number] = pickle.load(f)
+                    self.pages[number] = self._pickle.load(f)
             except IOError as e:
                 if e.errno != 2:
                     raise

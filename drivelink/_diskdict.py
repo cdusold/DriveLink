@@ -103,9 +103,11 @@ class Dict(MutableMapping):
         self._length = 0
         self._total = set()
         self._queue = []
+        # Just in case, cache pickle.
+        self._pickle = pickle
         try:
             with open(self._file_base + 'Len', 'rb') as f:
-                self.pages.currentDepth, self._length = pickle.load(f)
+                self.pages.currentDepth, self._length = self._pickle.load(f)
             for f in glob(self._file_base + '*'):
                 try:
                     self._total.add(int(f[len(self._file_base):]))
@@ -233,12 +235,12 @@ class Dict(MutableMapping):
 
     def _save_page_to_disk(self, number):
         with open(self._file_base + 'Len', 'wb') as f:
-            pickle.dump((self.pages.currentDepth, self._length), f)
+            self._pickle.dump((self.pages.currentDepth, self._length), f)
         if self._file_base:
             if number in self.pages:
                 if len(self.pages[number]) > 0:
                     with open(self._file_base + str(number), 'wb') as f:
-                        pickle.dump(self.pages[number], f)
+                        self._pickle.dump(self.pages[number], f)
                 else:
                     self._total.remove(number)
                 del self.pages[number]
@@ -250,7 +252,7 @@ class Dict(MutableMapping):
     def _load_page_from_disk(self, number):
         if self._file_base:
             with open(self._file_base + str(number), 'rb') as f:
-                self.pages[number] = pickle.load(f)
+                self.pages[number] = self._pickle.load(f)
             self._queue.append(number)
             remove(self._file_base + str(number))
 

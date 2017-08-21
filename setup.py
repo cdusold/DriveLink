@@ -9,15 +9,15 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "PySpeedup",
-    version = "0.1.3.0",
+    name = "DriveLink",
+    version = "0.1.0.0",
     author = "Chris Dusold",
-    author_email = "PySpeedup@ChrisDusold.com",
-    description = ("A multiprocess framework for efficient calculations."),
+    author_email = "DriveLink@ChrisDusold.com",
+    description = ("A set of memory conserving data structures."),
     license = read("LICENSE"),
-    keywords = "algorithmic speedup framework",
-    url = "http://pyspeedup.rtfd.org/",
-    packages=['pyspeedup', 'pyspeedup.concurrent', 'pyspeedup.algorithms', 'pyspeedup.memory', 'tests'],
+    keywords = "memory",
+    url = "http://drivelink.rtfd.org/",
+    packages=['drivelink', 'tests'],
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -27,8 +27,6 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent", #Hopefully.
         "Topic :: Scientific/Engineering",
-        "Topic :: Scientific/Engineering :: Mathematics",
-        "Topic :: System :: Hardware :: Symmetric Multi-processing",
         "Topic :: Utilities",
     ],
 )

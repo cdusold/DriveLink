@@ -1,6 +1,6 @@
 from collections import MutableSequence
 try:
-    import cPickle
+    import cPickle as pickle
 except:
     import pickle
 from os.path import expanduser, join

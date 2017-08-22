@@ -44,11 +44,13 @@ class Dict(MutableMapping):
         ...
         >>> diskDict[3]
         'd'
+        >>> 5 in diskDict
+        True
         >>> del diskDict[5]
         >>> ", ".join(str(x) for x in diskDict.keys())
         '0, 1, 2, 3, 4, 6, 7, 8, 9'
         >>> 5 in diskDict
-        True
+        False
 
     Or through context:
 

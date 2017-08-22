@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/cdusold/DriveLink.png)](https://travis-ci.org/cdusold/DriveLink)
+.. image:: https://travis-ci.org/cdusold/DriveLink.png
+   :target: https://travis-ci.org/cdusold/DriveLink
+   :alt: Build Status
 
 About
 =====

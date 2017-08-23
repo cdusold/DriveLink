@@ -38,7 +38,7 @@ class Dict(MutableMapping):
 
     There are two ways to initialize this object, as a standard object:
 
-        >>> diskDict = Dict("sample")
+        >>> diskDict = Dict("sampledict")
         >>> for i in range(10):
         ...     diskDict[i] = chr(97+i)
         ...
@@ -54,7 +54,7 @@ class Dict(MutableMapping):
 
     Or through context:
 
-        >>> with Dict("test") as d:
+        >>> with Dict("testdict") as d:
         ...     for i in range(10):
         ...         d[i] = chr(97+i)
         ...     print(d[3])

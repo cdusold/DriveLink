@@ -39,7 +39,7 @@ class List(MutableSequence):
 
     There are two ways to initialize this object, as a standard object:
 
-        >>> diskList = List("sample")
+        >>> diskList = List("samplelist")
         >>> for i in range(10):
         ...     diskList.append(i)
         ...
@@ -53,7 +53,7 @@ class List(MutableSequence):
 
     Or through context:
 
-        >>> with List("test") as d:
+        >>> with List("testlist") as d:
         ...     for i in range(10):
         ...         d.append(i)
         ...     print(d[3])

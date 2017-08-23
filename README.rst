@@ -1,6 +1,12 @@
 .. image:: https://travis-ci.org/cdusold/DriveLink.png
    :target: https://travis-ci.org/cdusold/DriveLink
    :alt: Build Status
+.. image:: https://coveralls.io/repos/github/cdusold/DriveLink/badge.svg?branch=master
+   :target: https://coveralls.io/github/cdusold/DriveLink?branch=master
+   :alt: Coverage Status
+.. image:: https://readthedocs.org/projects/drivelink/badge/?version=latest
+   :target: http://drivelink.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 About
 =====

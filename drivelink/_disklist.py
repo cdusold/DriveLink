@@ -121,7 +121,7 @@ class List(MutableSequence):
             if k < self._number_of_pages:
                 self._load_page_from_disk(k)
             else:
-                raise IndexError("list assignment index out of range")
+                raise IndexError
         while len(self._queue) > self.max_pages:
             if self._queue[0] == k:
                 self._queue.append(self._queue[0])
@@ -140,7 +140,7 @@ class List(MutableSequence):
         if key < 0:
             key += self._length
         if key >= self._length or key < 0:
-            raise IndexError("list assignment index out of range")
+            raise IndexError
         k, i = divmod(key, self.size_limit)
         self._guarantee_page(k)
         return k, i
@@ -157,7 +157,10 @@ class List(MutableSequence):
         '''
          Deletes the key value in question from the pages.
         '''
-        i, k = self._finditem(key)
+        try:
+            i, k = self._finditem(key)
+        except IndexError:
+            raise IndexError("list assignment index out of range")
         del self.pages[i][k]
         self._length -= 1
         for i in range(i, self._number_of_pages - 1):
@@ -176,7 +179,10 @@ class List(MutableSequence):
         '''
          Retrieves the value the key maps to.
         '''
-        i, k = self._finditem(key)
+        try:
+            i, k = self._finditem(key)
+        except IndexError:
+            raise IndexError("list index out of range")
         return self.pages[i][k]
 
     def __iter__(self):
@@ -202,7 +208,10 @@ class List(MutableSequence):
         '''
          Sets a value that a key maps to.
         '''
-        i, k = self._finditem(key)
+        try:
+            i, k = self._finditem(key)
+        except IndexError:
+            IndexError("list assignment index out of range")
         self.pages[i][k] = value
 
     def __del__(self):

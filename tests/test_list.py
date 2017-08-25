@@ -7,7 +7,7 @@ import os
 def test_list():
     lst = List("testList")
     for i in range(10):
-        lst[i] = i
+        lst.append(i)
     for i in range(10):
         assert lst[i] == i
 
@@ -28,7 +28,7 @@ def test_guarantee_page():
     with List("testListGuaranteePage", 1, 1) as l:
         l.append(1)
         l.append("c")
-        l[2] = 3.4
+        l.append(3.4)
         assert l[0] == 1
         assert l[1] == "c"
         assert l[2] == 3.4

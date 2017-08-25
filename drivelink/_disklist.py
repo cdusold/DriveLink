@@ -209,7 +209,8 @@ class List(MutableSequence):
         '''
         Save all the values to disk before closing.
         '''
-        if self is None or not hasattr(self, "_save_page_to_disk") or self._file_base is None:
+        if (self is None or not hasattr(self, "_save_page_to_disk")
+                or not hasattr(self, "_file_base") or self._file_base is None):
             return
         while len(self.pages) > 0:
             for key in self.pages.keys():
@@ -248,7 +249,7 @@ class List(MutableSequence):
         return "List with values stored to " + self._file_base
 
     def __repr__(self):
-        return "List().link_to_disk(''," + str(self.size_limit) + ',' + str(self.max_pages) + ',' + self._file_base + ')'
+        return "List(''," + str(self.size_limit) + ',' + str(self.max_pages) + ',' + self._file_base + ')'
 
     def __contains__(self, item):
         try:

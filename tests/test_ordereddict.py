@@ -34,13 +34,13 @@ def test_guarantee_page():
         assert d[2] == 3.4
 
 
-def test_guarantee_page():
-    d = OrderedDict("testOrderedDictGuaranteePage", 1, 1)
+def test_save():
+    d = OrderedDict("testOrderedDictSave", 1, 1)
     d[0] = 1
     d[1] = "c"
     d[2] = 3.4
     del d
-    with OrderedDict("testOrderedDictGuaranteePage", 1, 1) as d:
+    with OrderedDict("testOrderedDictSave", 1, 1) as d:
         assert d[0] == 1
         assert d[1] == "c"
         assert d[2] == 3.4

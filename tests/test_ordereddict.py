@@ -1,11 +1,11 @@
-from drivelink import Dict
+from drivelink import OrderedDict
 import pytest
 import os
 #from Process import freeze_support
 
 
 def test_dict():
-    dct = Dict("testDict")
+    dct = OrderedDict("testOrderedDict")
     for i in range(10):
         dct[i] = i
     for i in range(10):
@@ -14,18 +14,18 @@ def test_dict():
 
 def test_init():
     with pytest.raises(ValueError) as excinfo:
-        Dict("testInit", 0)
+        OrderedDict("testOrderedDictInit", 0)
     excinfo.match(".* per page.*")
     with pytest.raises(ValueError) as excinfo:
-        Dict("testInit", 1, 0)
+        OrderedDict("testOrderedDictInit", 1, 0)
     excinfo.match(".* in RAM.*")
-    with Dict("testInit", 1, 1):
+    with OrderedDict("testOrderedDictInit", 1, 1):
         pass
-    Dict("testInit", 1, 1)
+    OrderedDict("testOrderedDictInit", 1, 1)
 
 
 def test_guarantee_page():
-    with Dict("testGuaranteePage", 1, 1) as d:
+    with OrderedDict("testOrderedDictGuaranteePage", 1, 1) as d:
         d[0] = 1
         d[1] = "c"
         d[2] = 3.4

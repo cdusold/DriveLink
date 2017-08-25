@@ -289,16 +289,3 @@ class List(MutableSequence):
                            1].append(self.pages[self._number_of_pages - 2][-1])
                 del self.pages[self._number_of_pages - 2][-1]
         self._length += 1
-
-
-if __name__ == '__main__':
-    d = List('testList', 2, 2)
-    while len(d):
-        d.pop()
-    for i in range(16):
-        d.append(i)
-        print(d.pages)
-    d.max_pages = 16
-    for i in range(16):
-        d[i] = i
-        print(d.pages)

@@ -229,7 +229,8 @@ class Dict(MutableMapping):
         '''
         Save all the values to disk before closing.
         '''
-        if self is None or not hasattr(self, "_save_page_to_disk") or self._file_base is None:
+        if (self is None or not hasattr(self, "_save_page_to_disk")
+                or not hasattr(self, "_file_base") or self._file_base is None):
             return
         while len(self.pages) > 0:
             for key in self.pages.keys():
@@ -273,14 +274,3 @@ class Dict(MutableMapping):
 
     def __exit__(self, exception_type, exception_val, trace):
         _exitgracefully(self)
-
-
-if __name__ == '__main__':
-    d = Dict('testDict', 2, 2)
-    for i in range(16):
-        d[i / 10.] = i
-        print(d.pages)
-    d.max_pages = 16
-    for i in range(16):
-        d[i / 10.] = i
-        print(d.pages)

@@ -25,20 +25,20 @@ Indices and tables
 Introduction
 ============
 
-.. automodule:: DriveLink
+.. automodule:: drivelink
    :members: __init__
 
 Disk Based Dictionary
 ---------------------
 
-.. autoclass:: DriveLink.Dict
+.. autoclass:: drivelink.Dict
 
 Ordered Access Disk Based Dictionary
 ---------------------
 
-.. autoclass:: DriveLink.OrderedDict
+.. autoclass:: drivelink.OrderedDict
 
 Disk Based List
 ---------------
 
-.. autoclass:: DriveLink.List
+.. autoclass:: drivelink.List

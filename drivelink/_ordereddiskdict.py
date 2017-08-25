@@ -199,14 +199,3 @@ class OrderedDict(MutableMapping):
 
     def __exit__(self, exception_type, exception_val, trace):
         _exitgracefully(self)
-
-
-if __name__ == '__main__':
-    d = Dict('testDict', 2, 2)
-    for i in range(16):
-        d[i / 10.] = i
-        print(d.pages)
-    d.max_pages = 16
-    for i in range(16):
-        d[i / 10.] = i
-        print(d.pages)

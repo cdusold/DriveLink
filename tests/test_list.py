@@ -25,10 +25,22 @@ def test_init():
 
 
 def test_guarantee_page():
-    with List("testListGuaranteePage", 1, 1) as l:
+    with List("testGuaranteePage", 1, 1) as l:
         l.append(1)
         l.append("c")
         l.append(3.4)
+        assert l[0] == 1
+        assert l[1] == "c"
+        assert l[2] == 3.4
+
+
+def test_save():
+    l = List("testGuaranteePage", 1, 1)
+    l.append(1)
+    l.append("c")
+    l.append(3.4)
+    del l
+    with List("testGuaranteePage", 1, 1) as l:
         assert l[0] == 1
         assert l[1] == "c"
         assert l[2] == 3.4

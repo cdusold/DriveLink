@@ -34,6 +34,18 @@ def test_guarantee_page():
         assert d[2] == 3.4
 
 
+def test_save():
+    d = Dict("testSave", 1, 1) as d:
+    d[0] = 1
+    d[1] = "c"
+    d[2] = 3.4
+    del d
+    with Dict("testSave", 1, 1) as d:
+        assert d[0] == 1
+        assert d[1] == "c"
+        assert d[2] == 3.4
+
+
 if __name__ == '__main__':
     freeze_support()
     ut.main()

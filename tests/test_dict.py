@@ -35,7 +35,7 @@ def test_guarantee_page():
 
 
 def test_save():
-    d = Dict("testSave", 1, 1) as d:
+    d = Dict("testSave", 1, 1)
     d[0] = 1
     d[1] = "c"
     d[2] = 3.4

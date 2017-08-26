@@ -13,11 +13,7 @@ def _exitgracefully(self):
     '''
     Save all the values to disk before closing.
     '''
-    if self is None or not hasattr(self, "_save_page_to_disk"):
-        return
-    while len(self.pages) > 0:
-        for key in list(self.pages.keys()):
-            self._save_page_to_disk(key)
+    self.close()
 
 
 class _page(dict):
@@ -152,7 +148,7 @@ class OrderedDict(MutableMapping):
             self._length += 1
         self.pages[i][k] = value
 
-    def __del__(self):
+    def close(self):
         '''
         Save all the values to disk before closing.
         '''
@@ -200,4 +196,4 @@ class OrderedDict(MutableMapping):
         return self
 
     def __exit__(self, exception_type, exception_val, trace):
-        _exitgracefully(self)
+        self.close()

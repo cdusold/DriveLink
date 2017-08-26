@@ -13,11 +13,7 @@ def _exitgracefully(self):
     '''
     Save all the values to disk before closing.
     '''
-    if self is None or not hasattr(self, "_save_page_to_disk"):
-        return
-    while len(self.pages) > 0:
-        for key in list(self.pages.keys()):
-            self._save_page_to_disk(key)
+    self.close()
 
 
 class _page(list):
@@ -214,7 +210,7 @@ class List(MutableSequence):
             IndexError("list assignment index out of range")
         self.pages[i][k] = value
 
-    def __del__(self):
+    def close(self):
         '''
         Save all the values to disk before closing.
         '''
@@ -271,7 +267,7 @@ class List(MutableSequence):
         return self
 
     def __exit__(self, exception_type, exception_val, trace):
-        _exitgracefully(self)
+        self.close()
 
     def append(self, v):
         k = self._length // self.size_limit

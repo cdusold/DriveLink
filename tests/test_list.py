@@ -39,7 +39,7 @@ def test_save():
     l.append(1)
     l.append("c")
     l.append(3.4)
-    del l
+    l.close()
     with List("testListSave", 1, 1) as l:
         assert l[0] == 1
         assert l[1] == "c"

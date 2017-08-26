@@ -97,6 +97,8 @@ class Dict(MutableMapping):
                     raise
                 pass
         self._file_base = join(file_location, file_basename)
+        self._file_loc = file_location
+        self._file_basename = file_basename
         self.pages = _page()
         self._length = 0
         self._total = set()
@@ -109,9 +111,9 @@ class Dict(MutableMapping):
             for f in glob(self._file_base + '*'):
                 try:
                     self._total.add(int(f[len(self._file_base):]))
-                except:
+                except ValueError:
                     pass
-        except:
+        except FileNotFoundError:
             pass
         atexit.register(_exitgracefully, self)
 
@@ -229,7 +231,7 @@ class Dict(MutableMapping):
                 or not hasattr(self, "_file_base") or self._file_base is None):
             return
         while len(self.pages) > 0:
-            for key in self.pages.keys():
+            for key in set(self.pages.keys()):
                 self._save_page_to_disk(key)
 
     def _save_page_to_disk(self, number):
@@ -259,7 +261,7 @@ class Dict(MutableMapping):
         return "Dictionary with values stored to " + self._file_base
 
     def __repr__(self):
-        return "Dict(''," + str(self.size_limit) + ',' + str(self.max_pages) + ',' + self._file_base + ')'
+        return "Dict('" + self._file_basename + "', " + str(self.size_limit) + ', ' + str(self.max_pages) + ", '" + self._file_loc + "')"
 
     def __contains__(self, item):
         i, k = self._finditem(item)

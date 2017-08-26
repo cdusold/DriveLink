@@ -17,7 +17,7 @@ def _exitgracefully(self):
 
 
 class _page(dict):
-    currentDepth = 0
+    pass
 
 
 class OrderedDict(MutableMapping):
@@ -43,6 +43,8 @@ class OrderedDict(MutableMapping):
                     raise
                 pass
         self._file_base = join(file_location, file_basename)
+        self._file_loc = file_location
+        self._file_basename = file_basename
         self.pages = _page()
         self._length = 0
         self._total = set()
@@ -51,13 +53,13 @@ class OrderedDict(MutableMapping):
         self._pickle = pickle
         try:
             with open(self._file_base + 'Len', 'rb') as f:
-                self.pages.currentDepth, self._length = self._pickle.load(f)
+                self._length = self._pickle.load(f)
             for f in glob(self._file_base + '*'):
                 try:
                     self._total.add(int(f[len(self._file_base):]))
-                except:
+                except ValueError:
                     pass
-        except:
+        except FileNotFoundError:
             pass
         atexit.register(_exitgracefully, self)
 
@@ -74,7 +76,6 @@ class OrderedDict(MutableMapping):
             if k not in self.pages:
                 self.pages[k] = _page()
                 self._total.add(k)
-                self.pages[k].currentDepth = self.pages.currentDepth
                 self._queue.append(k)
         while len(self._queue) > self.max_pages:
             if self._queue[0] == k:
@@ -156,7 +157,7 @@ class OrderedDict(MutableMapping):
                 or not hasattr(self, "_file_base") or self._file_base is None):
             return
         while len(self.pages) > 0:
-            for key in self.pages.keys():
+            for key in set(self.pages.keys()):
                 self._save_page_to_disk(key)
 
     def _save_page_to_disk(self, number):
@@ -186,7 +187,7 @@ class OrderedDict(MutableMapping):
         return "Dictionary with values stored to " + self._file_base
 
     def __repr__(self):
-        return "OrderedDict(''," + str(self.size_limit) + ',' + str(self.max_pages) + ',' + self._file_base + ')'
+        return "OrderedDict(" + self._file_basename + "', " + str(self.size_limit) + ', ' + str(self.max_pages) + ", '" + self._file_loc + "')"
 
     def __contains__(self, item):
         i, k = self._finditem(item)

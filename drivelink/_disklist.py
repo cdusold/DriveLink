@@ -96,6 +96,8 @@ class List(MutableSequence):
                     raise
                 pass
         self._file_base = join(file_location, file_basename)
+        self._file_loc = file_location
+        self._file_basename = file_basename
         self.pages = dict()
         self._length = 0
         self._number_of_pages = 0
@@ -105,7 +107,7 @@ class List(MutableSequence):
         try:
             with open(self._file_base + 'Len', 'rb') as f:
                 self._number_of_pages, self._length = self._pickle.load(f)
-        except:
+        except FileNotFoundError:
             pass
         atexit.register(_exitgracefully, self)
 
@@ -218,7 +220,7 @@ class List(MutableSequence):
                 or not hasattr(self, "_file_base") or self._file_base is None):
             return
         while len(self.pages) > 0:
-            for key in self.pages.keys():
+            for key in set(self.pages.keys()):
                 self._save_page_to_disk(key)
 
     def _save_page_to_disk(self, number):
@@ -254,7 +256,7 @@ class List(MutableSequence):
         return "List with values stored to " + self._file_base
 
     def __repr__(self):
-        return "List(''," + str(self.size_limit) + ',' + str(self.max_pages) + ',' + self._file_base + ')'
+        return "List('" + self._file_basename + "', " + str(self.size_limit) + ', ' + str(self.max_pages) + ", '" + self._file_loc + "')"
 
     def __contains__(self, item):
         try:

@@ -39,7 +39,7 @@ def test_save():
     d[0] = 1
     d[1] = "c"
     d[2] = 3.4
-    del d
+    d.close()
     with Dict("testDictSave", 1, 1) as d:
         assert d[0] == 1
         assert d[1] == "c"

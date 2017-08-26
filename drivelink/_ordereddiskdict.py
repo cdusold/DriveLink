@@ -9,13 +9,6 @@ from glob import glob
 import atexit
 
 
-def _exitgracefully(self):
-    '''
-    Save all the values to disk before closing.
-    '''
-    self.close()
-
-
 class _page(dict):
     pass
 
@@ -61,7 +54,7 @@ class OrderedDict(MutableMapping):
                     pass
         except IOError:
             pass
-        atexit.register(_exitgracefully, self)
+        atexit.register(OrderedDict.close, self)
 
     def _guarantee_page(self, k):
         """

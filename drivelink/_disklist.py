@@ -9,13 +9,6 @@ from glob import glob
 import atexit
 
 
-def _exitgracefully(self):
-    '''
-    Save all the values to disk before closing.
-    '''
-    self.close()
-
-
 class _page(list):
     pass
 
@@ -109,7 +102,7 @@ class List(MutableSequence):
                 self._number_of_pages, self._length = self._pickle.load(f)
         except IOError:
             pass
-        atexit.register(_exitgracefully, self)
+        atexit.register(List.close, self)
 
     def _guarantee_page(self, k):
         """

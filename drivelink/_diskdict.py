@@ -9,13 +9,6 @@ from glob import glob
 import atexit
 
 
-def _exitgracefully(self):
-    '''
-    Save all the values to disk before closing.
-    '''
-    self.close()
-
-
 class _page(dict):
     currentDepth = 0
 
@@ -115,7 +108,7 @@ class Dict(MutableMapping):
                     pass
         except IOError:
             pass
-        atexit.register(_exitgracefully, self)
+        atexit.register(Dict.close, self)
 
     def _guarantee_page(self, k):
         """

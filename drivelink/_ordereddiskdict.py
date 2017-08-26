@@ -59,7 +59,7 @@ class OrderedDict(MutableMapping):
                     self._total.add(int(f[len(self._file_base):]))
                 except ValueError:
                     pass
-        except FileNotFoundError:
+        except IOError:
             pass
         atexit.register(_exitgracefully, self)
 

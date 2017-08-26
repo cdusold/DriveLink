@@ -107,7 +107,7 @@ class List(MutableSequence):
         try:
             with open(self._file_base + 'Len', 'rb') as f:
                 self._number_of_pages, self._length = self._pickle.load(f)
-        except FileNotFoundError:
+        except IOError:
             pass
         atexit.register(_exitgracefully, self)
 

@@ -8,12 +8,14 @@ from os import remove, makedirs
 from glob import glob
 import atexit
 
+from drivelink import Link
+
 
 class _page(dict):
     currentDepth = 0
 
 
-class Dict(MutableMapping):
+class Dict(Link, MutableMapping):
     """
     A dictionary class that maintains O(1) look up and write while keeping RAM usage O(1) as well.
 
@@ -51,103 +53,42 @@ class Dict(MutableMapping):
 
     If there is a way to break dict like behavior and you can reproduce it, please
     report it to `the GitHub issues <https://github.com/cdusold/DriveLink/issues/>`_.
-
-    .. note:: This class is not thread safe, nor is it process safe. Any multithreaded
-              or multiprocessed uses of this class holds no guarantees of accuracy.
-
-    You can configure how this class stores things in a few ways.
-
-    The file_basename parameter allows you to keep multiple different stored objects
-    in the same file_location, which defaults to .DriveLink in the user's home folder.
-    Using a file_basename of the empty string may cause a small slowdown if more
-    than just this object's files are in the folder. Using a file_location of the
-    empty string will result in files being placed in the environment's current
-    location (i.e. what `os.getcwd()` would return).
-
-    The size_limit parameter determines how many items are kept in each page, and the
-    max_pages parameter determines how many pages can be kept in memory at the same
-    time. If you use smaller items in the dict, increasing either is probably a
-    good idea to get better performance. This setting will only use about 128 MB if
-    standard floats or int32 values. Likely less than 200 MB will ever be in memory,
-    which prevents the RAM from filling up and needing to use swap space. Tuning
-    these values will be project, hardware and usage specific to get the best results.
-    Even with the somewhat low defaults, this will beat out relying on python to
-    use swap space.
     """
 
     def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
-        if max_pages < 1:
-            raise ValueError("There must be allowed at least one page in RAM.")
-        self.max_pages = max_pages
-        if size_limit < 1:
-            raise ValueError("There must be allowed at least one item per page.")
-        self.size_limit = size_limit
-        if file_location:
-            try:
-                makedirs(file_location)
-            except OSError as e:
-                if e.errno != 17:
-                    raise
-                pass
-        self._file_base = join(file_location, file_basename)
-        self._file_loc = file_location
-        self._file_basename = file_basename
         self.pages = _page()
-        self._length = 0
         self._total = set()
-        self._queue = []
-        # Just in case, cache pickle.
-        self._pickle = pickle
-        try:
-            with open(self._file_base + 'Len', 'rb') as f:
-                self.pages.currentDepth, self._length = self._pickle.load(f)
-            for f in glob(self._file_base + '*'):
-                try:
-                    self._total.add(int(f[len(self._file_base):]))
-                except ValueError:
-                    pass
-        except IOError:
-            pass
-        atexit.register(Dict.close, self)
+        super(Dict, self).__init__(file_basename, size_limit, max_pages, file_location)
 
-    def _guarantee_page(self, k):
-        """
-        Pulls up the page in question.
-        """
-        if k not in self.pages:
-            try:
-                if k in self._total:
-                    self._load_page_from_disk(k)
-            except:
-                pass
-            if k not in self.pages:
-                self.pages[k] = _page()
-                self._total.add(k)
-                self.pages[k].currentDepth = self.pages.currentDepth
-                self._queue.append(k)
-        while len(self._queue) > self.max_pages:
-            if self._queue[0] == k:
-                self._queue.append(self._queue[0])
-                del self._queue[0]
-            self._save_page_to_disk(self._queue[0])
-
-    def _branchpage(self, pagenumber):
-        self._guarantee_page(pagenumber)
-        if self.pages[pagenumber].currentDepth == self.pages.currentDepth:
+    def load_index(self):
+        other_values = super(Dict, self).load_index()
+        if other_values is None:
             return
-        self.pages[pagenumber].currentDepth = self.pages.currentDepth
-        for key in set(self.pages[pagenumber].keys()):
-            k = hash(key) & self.pages.currentDepth
-            if k != pagenumber:
-                self._guarantee_page(pagenumber)
-                v = self.pages[pagenumber][key]
-                del self.pages[pagenumber][key]
-                self._guarantee_page(k)
-                self.pages[k][key] = v
+        self.pages.currentDepth = other_values[0]
+        for f in glob(self._file_base + '*'):
+            try:
+                self._total.add(int(f[len(self._file_base):]))
+            except ValueError:
+                pass
 
-    def _finditem(self, key):
+    def store_index(self):
+        super(Dict, self).store_index(self.pages.currentDepth)
+
+    def open_page(self, k):
+        try:
+            if k in self._total:
+                self._load_page_from_disk(k)
+        except:
+            pass
+        if k not in self.pages:
+            self.pages[k] = _page()
+            self._total.add(k)
+            self.pages[k].currentDepth = self.pages.currentDepth
+            self._queue.append(k)
+
+    def determine_index(self, key):
         """
-        Pulls up the page containing the key in question.
+        Figures out where the key in question should be.
 
         Most frequently O(1), when a page becomes too large, there's
         a O(ln(n)) search that refactors O(k ln(n)) elements
@@ -162,106 +103,40 @@ class Dict(MutableMapping):
         while (k & (self.pages.currentDepth >> i)) not in self._total | set([0]):
             i += 1
         self._branchpage(k & (self.pages.currentDepth >> i))
-        self._guarantee_page(k)
         return k, key
 
-    def _iterpages(self):
-        """
-        Pulls up page after page and cycles through all of them.
-        """
+    def page_indices(self):
         for k in list(self._total):
-            self._guarantee_page(k)
-            yield self.pages[k]
-
-    def __delitem__(self, key):
-        '''
-         Deletes the key value in question from the pages.
-        '''
-        i, k = self._finditem(key)
-        del self.pages[i][k]
-        self._length -= 1
-
-    def __getitem__(self, key):
-        '''
-         Retrieves the value the key maps to.
-        '''
-        i, k = self._finditem(key)
-        return self.pages[i][k]
-
-    def __iter__(self):
-        '''
-         Iterates through all the keys stored.
-        '''
-        for p in self._iterpages():
-            for i in p:
-                yield i
-
-    def __len__(self):
-        '''
-         Returns the number of key value pairs stored.
-        '''
-        return self._length
+            yield k
 
     def __setitem__(self, key, value):
         '''
          Sets a value that a key maps to.
         '''
-        i, k = self._finditem(key)
-        if k not in self.pages[i]:
-            self._length += 1
-        self.pages[i][k] = value
+        super(Dict, self).__setitem__(key, value)
+        i, _ = self.determine_index(key)
         if len(self.pages[i]) > self.size_limit:
             if self.pages[i].currentDepth == self.pages.currentDepth:
                 self.pages.currentDepth <<= 1
                 self.pages.currentDepth |= 1
             self._branchpage(i)
 
-    def close(self):
-        '''
-        Save all the values to disk before closing.
-        '''
-        if (self is None or not hasattr(self, "_save_page_to_disk")
-                or not hasattr(self, "_file_base") or self._file_base is None):
-            return
-        while len(self.pages) > 0:
-            for key in set(self.pages.keys()):
-                self._save_page_to_disk(key)
-
-    def _save_page_to_disk(self, number):
-        with open(self._file_base + 'Len', 'wb') as f:
-            self._pickle.dump((self.pages.currentDepth, self._length), f)
-        if self._file_base:
-            if number in self.pages:
-                if len(self.pages[number]) > 0:
-                    with open(self._file_base + str(number), 'wb') as f:
-                        self._pickle.dump(self.pages[number], f)
-                else:
-                    self._total.remove(number)
-                del self.pages[number]
-            for i in range(len(self._queue)):
-                if self._queue[i] == number:
-                    del self._queue[i]
-                    break
-
-    def _load_page_from_disk(self, number):
-        if self._file_base:
-            with open(self._file_base + str(number), 'rb') as f:
-                self.pages[number] = self._pickle.load(f)
-            self._queue.append(number)
-            remove(self._file_base + str(number))
+    def page_removed(self, number):
+        self._total.remove(number)
 
     def __str__(self):
         return "Dictionary with values stored to " + self._file_base
 
-    def __repr__(self):
-        return "Dict('" + self._file_basename + "', " + str(self.size_limit) + ', ' + str(self.max_pages) + ", '" + self._file_loc + "')"
-
-    def __contains__(self, item):
-        i, k = self._finditem(item)
-        return k in self.pages[i]
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exception_type, exception_val, trace):
-        self.close()
+    def _branchpage(self, pagenumber):
+        self._guarantee_page(pagenumber)
+        if self.pages[pagenumber].currentDepth == self.pages.currentDepth:
+            return
+        self.pages[pagenumber].currentDepth = self.pages.currentDepth
+        for key in set(self.pages[pagenumber].keys()):
+            k = hash(key) & self.pages.currentDepth
+            if k != pagenumber:
+                self._guarantee_page(pagenumber)
+                v = self.pages[pagenumber][key]
+                del self.pages[pagenumber][key]
+                self._guarantee_page(k)
+                self.pages[k][key] = v

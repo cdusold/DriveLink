@@ -1,12 +1,5 @@
 from collections import MutableSequence
-try:
-    import cPickle as pickle
-except:
-    import pickle
 from os.path import expanduser, join
-from os import remove, makedirs
-from glob import glob
-import atexit
 
 from drivelink import Link
 

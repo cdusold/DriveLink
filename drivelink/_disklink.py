@@ -85,7 +85,8 @@ class Link(abc.ABC):
         """
         try:
             with open(self._file_base + 'Len', 'rb') as f:
-                *other_values, self._length = self._pickle.load(f)
+                other_values = self._pickle.load(f)
+                other_values, self._length = other_values[:-1], other_values[-1]
         except IOError:
             return None
         return other_values
@@ -100,7 +101,7 @@ class Link(abc.ABC):
         To save additional items, just pass them as arguments to a super call.
         """
         with open(self._file_base + 'Len', 'wb') as f:
-            self._pickle.dump((*other_values, self._length), f)
+            self._pickle.dump(tuple(other_values) + (self._length,), f)
 
     def __len__(self):
         '''

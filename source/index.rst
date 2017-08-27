@@ -28,6 +28,11 @@ Introduction
 .. automodule:: drivelink
    :members: __init__
 
+Interface Base Class
+--------------------
+
+.. autoclass:: drivelink.Link
+
 Disk Based Dictionary
 ---------------------
 

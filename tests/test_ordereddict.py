@@ -34,6 +34,14 @@ def test_guarantee_page():
         assert d[2] == 3.4
 
 
+def test_string_funcs():
+    d = OrderedDict("testOrderedDictStringFuncs")
+    assert str(d).startswith("Dictionary")
+    assert str(d).endswith("testOrderedDictStringFuncs")
+    assert repr(d).startswith("OrderedDict(")
+    assert repr(d).endswith(".DriveLink')")
+
+
 def test_save():
     d = OrderedDict("testOrderedDictSave", 1, 1)
     d[0] = 1

@@ -46,6 +46,14 @@ def test_save():
         assert d[2] == 3.4
 
 
+def test_string_funcs():
+    d = Dict("testDictStringFuncs")
+    assert str(d).startswith("Dictionary")
+    assert str(d).endswith("testDictStringFuncs")
+    assert repr(d).startswith("Dict(")
+    assert repr(d).endswith(".DriveLink')")
+
+
 if __name__ == '__main__':
     freeze_support()
     ut.main()

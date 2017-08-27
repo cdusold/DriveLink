@@ -11,10 +11,6 @@ import atexit
 from drivelink import Link
 
 
-class _page(dict):
-    pass
-
-
 class OrderedDict(Link, MutableMapping):
     """
     A dictionary class that maintains O(1) look up and write while keeping RAM usage O(1) as well.
@@ -24,7 +20,7 @@ class OrderedDict(Link, MutableMapping):
     """
 
     def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
-        self.pages = _page()
+        self.pages = {}
         self._total = set()
         super(OrderedDict, self).__init__(file_basename, size_limit, max_pages, file_location)
 
@@ -45,7 +41,7 @@ class OrderedDict(Link, MutableMapping):
         except:
             pass
         if k not in self.pages:
-            self.pages[k] = _page()
+            self.pages[k] = {}
             self._total.add(k)
             self._queue.append(k)
 

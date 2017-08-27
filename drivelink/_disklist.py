@@ -11,10 +11,6 @@ import atexit
 from drivelink import Link
 
 
-class _page(list):
-    pass
-
-
 class List(Link, MutableSequence):
     """
     A list class that maintains O(k) look up and O(1) append while keeping RAM usage O(1) as well.
@@ -93,12 +89,12 @@ class List(Link, MutableSequence):
         super(List, self).__delitem__(key)
         i, _ = self.determine_index(key)
         for i in range(i, self._number_of_pages - 1):
-            self._guarantee_page(i + 1)
+            self.open_page(i + 1)
             if self.pages[i + 1]:
                 v = self.pages[i + 1][0]
                 del self.pages[i + 1][0]
-                self._guarantee_page(i)
                 self.pages[i].append(v)
+                self._guarantee_page(i + 1)
         self._guarantee_page(self._number_of_pages - 1)
         if not self.pages[self._number_of_pages - 1]:
             del self.pages[self._number_of_pages - 1]
@@ -106,6 +102,7 @@ class List(Link, MutableSequence):
 
     def __reversed__(self):
         for p in reversed(range(self._number_of_pages)):
+            self._guarantee_page(p)
             for i in reversed(self.pages[p]):
                 yield i
 
@@ -127,14 +124,15 @@ class List(Link, MutableSequence):
         k, i = divmod(i, self.size_limit)
         if k == self._number_of_pages:
             self._newpage()
+        self._guarantee_page(k)
         self.pages[k].insert(i, v)
         if len(self.pages[k]) > self.size_limit:
             for k in range(k, self._number_of_pages - 1):
-                self._guarantee_page(i)
-                v = self.pages[i][-1]
-                del self.pages[i][-1]
-                self._guarantee_page(i + 1)
-                self.pages[i + 1].insert(0, v)
+                self._guarantee_page(k)
+                v = self.pages[k][-1]
+                del self.pages[k][-1]
+                self._guarantee_page(k + 1)
+                self.pages[k + 1].insert(0, v)
             if len(self.pages[self._number_of_pages - 1]) > self.size_limit:
                 self._newpage()
                 self.pages[self._number_of_pages -

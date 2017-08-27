@@ -46,6 +46,40 @@ def test_save():
         assert l[2] == 3.4
 
 
+def test_string_funcs():
+    l = List("testListStringFuncs")
+    assert str(l).startswith("List ")
+    assert str(l).endswith("testListStringFuncs")
+    assert repr(l).startswith("List(")
+    assert repr(l).endswith(".DriveLink')")
+
+
+def test_insert():
+    l = List("testInsert", 1, 1)
+    l.append(0)
+    l.extend([1, 3])
+    l.insert(2, 2)
+    for i in range(4):
+        assert l[i] == i
+
+
+def test_delete():
+    l = List("testDelete", 1, 1)
+    l.append(0)
+    l.extend([0, 1, 2, 5, 3])
+    del l[1]
+    del l[3]
+    for i in range(4):
+        assert l[i] == i
+
+
+def test_reverse():
+    l = List("testReverse", 2, 2)
+    l.extend([i for i in reversed(range(10))])
+    for i, v in enumerate(reversed(l)):
+        assert i == v
+
+
 if __name__ == '__main__':
     freeze_support()
     ut.main()

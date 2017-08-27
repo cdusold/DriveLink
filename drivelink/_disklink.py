@@ -6,10 +6,9 @@ from os.path import expanduser, join
 from os import remove, makedirs
 from glob import glob
 import atexit
-import abc
 
 
-class Link(abc.ABC):
+class Link(object):
     """
     This abstract base class provides shared functionality for any hard disk linked
     class required. The other classes in this library use this class, and can be
@@ -142,7 +141,6 @@ class Link(abc.ABC):
                 del self._queue[0]
             self._save_page_to_disk(self._queue[0])
 
-    @abc.abstractmethod
     def open_page(self, k):
         """
         Once it is determined a page isn't in RAM, make it so.
@@ -159,7 +157,6 @@ class Link(abc.ABC):
         self._guarantee_page(k)
         return k, i
 
-    @abc.abstractmethod
     def determine_index(self, key):
         """
         Figures out where the key in question should be.
@@ -216,7 +213,6 @@ class Link(abc.ABC):
             for i in p:
                 yield i
 
-    @abc.abstractmethod
     def page_indices(self):
         """
         Yields an iterable containing each page.

@@ -1,29 +1,21 @@
-import random as rnd
 import copy
+from os.path import join, expanduser
 
 from drivelink import Dict
 
 
-# This is actually a dummy implementation to create tests around.
-# The real thing will use drivelink.Dict appropriately.
 class _Cached:
     "This will shine the most with recursive functions. But the recursion has to call the cached function, not the function itself."
     f = None
-    n = 0
     c = None
-    pop = None
 
-    def popRandom(self):
-        del self.c[rnd.choice(list(self.c.keys()))]
-
-    def __init__(self, function, numberOfCachedValues, popType='random'):
+    def __init__(self, function, file_basename=None, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
         for n in list(n for n in set(dir(function)) - set(dir(self)) if n != '__class__'):
             setattr(self, n, getattr(function, n))
+        if file_basename is None:
+            file_basename = function.__name__
         self.f = function
-        self.n = numberOfCachedValues
-        self.c = {}
-        if popType == 'random':
-            self.pop = self.popRandom
+        self.c = Dict(file_basename, size_limit, max_pages, file_location)
 
     def __call__(self, *args, **kwargs):
         i = str(args) + str(kwargs)
@@ -31,17 +23,17 @@ class _Cached:
             return copy.deepcopy(self.c[i])
         else:
             t = self.f(*args, **kwargs)
-            if len(self.c) >= self.n and self.n != -1:
-                self.pop()
             self.c[i] = copy.deepcopy(t)
             return t
 
 
-def cached(numberOfCachedValues, popType='random'):
-    '''A decorator that creates a simplistic cached function with minimal overhead.
+def cached(file_basename=None, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
+    '''
+    A decorator that creates a simplistic cached function with minimal overhead.
 
-    This provides very simplistic and quick cache.
+    This provides very simplistic and quick cache. The values are saved to a drivelink.Dict
+    and will be reloaded on program restarting.
     '''
     def decorator(f):
-        return _Cached(f, numberOfCachedValues, popType)
+        return _Cached(f, file_basename, size_limit, max_pages, file_location)
     return decorator

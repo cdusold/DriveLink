@@ -12,4 +12,5 @@ big data centric solutions.
 from drivelink._disklink import Link
 from drivelink._diskdict import Dict
 from drivelink._disklist import List
+from drivelink._diskmemoize import cached
 from drivelink._ordereddiskdict import OrderedDict

@@ -64,12 +64,12 @@ class cachedTest(ut.TestCase):
         self.c.n = -1
         with Timer() as t2:
             _ = self.c(32)
-        self.assertLess(t2.interval, t1.interval,
+        self.assertTrue(t2.interval < t1.interval,
                         "There isn't a speed up... This is useless then, I suppose.")
         with Timer() as t1:
             _ = self.c(32)
-        self.assertGreater(t2.interval, t1.interval,
-                           "There isn't a speed up... This is useless then, I suppose.")
+        self.assertTrue(t2.interval > t1.interval,
+                        "There isn't a speed up... This is useless then, I suppose.")
 
 
 if __name__ == '__main__':

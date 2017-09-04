@@ -43,10 +43,10 @@ class List(Link, MutableSequence):
     report it to `the GitHub issues <https://github.com/cdusold/DriveLink/issues/>`_.
     """
 
-    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
+    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink"), compression_ratio=0):
         self.pages = dict()
         self._number_of_pages = 0
-        super(List, self).__init__(file_basename, size_limit, max_pages, file_location)
+        super(List, self).__init__(file_basename, size_limit, max_pages, file_location, compression_ratio)
 
     def load_index(self):
         other_values = super(List, self).load_index()

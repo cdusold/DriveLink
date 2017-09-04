@@ -13,10 +13,10 @@ class OrderedDict(Link, MutableMapping):
     dictionary into parts.
     """
 
-    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
+    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink"), compression_ratio=0):
         self.pages = {}
         self._total = set()
-        super(OrderedDict, self).__init__(file_basename, size_limit, max_pages, file_location)
+        super(OrderedDict, self).__init__(file_basename, size_limit, max_pages, file_location, compression_ratio)
 
     def load_index(self):
         other_values = super(OrderedDict, self).load_index()

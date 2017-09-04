@@ -6,6 +6,7 @@ from os.path import expanduser, join
 from os import remove, makedirs
 from glob import glob
 import atexit
+import zlib
 
 
 class Link(object):
@@ -49,9 +50,12 @@ class Link(object):
     these values will be project, hardware and usage specific to get the best results.
     Even with the somewhat low defaults, this will beat out relying on python to
     use swap space.
+
+    In order to speed up disk access, you can specify a compression_ratio. compression
+    is performed using Python's built in `ZLib library <https://docs.python.org/library/zlib.html>`_.
     """
 
-    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
+    def __init__(self, file_basename, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink"), compression_ratio=0):
         if max_pages < 1:
             raise ValueError("There must be allowed at least one page in RAM.")
         self.max_pages = max_pages
@@ -68,6 +72,7 @@ class Link(object):
         self._file_base = join(file_location, file_basename)
         self._file_loc = file_location
         self._file_basename = file_basename
+        self._compression = compression_ratio
         self._length = 0
         self._queue = []
         # Just in case, cache pickle.
@@ -75,6 +80,7 @@ class Link(object):
         self.load_index()
         atexit.register(Link.close, self)
 
+    _stored_index = None
     def load_index(self):
         """
         This base implementation loads the number of entries in the collection and
@@ -84,7 +90,8 @@ class Link(object):
         """
         try:
             with open(self._file_base + 'Len', 'rb') as f:
-                other_values = self._pickle.load(f)
+                self._stored_index = f.read()
+                other_values = self._pickle.loads(self._stored_index)
                 other_values, self._length = other_values[:-1], other_values[-1]
         except IOError:
             return None
@@ -99,8 +106,12 @@ class Link(object):
 
         To save additional items, just pass them as arguments to a super call.
         """
+        to_save = self._pickle.dumps(tuple(other_values) + (self._length,))
+        if to_save == self._stored_index:
+            return
         with open(self._file_base + 'Len', 'wb') as f:
-            self._pickle.dump(tuple(other_values) + (self._length,), f)
+            f.write(to_save)
+        self._stored_index = to_save
 
     def __len__(self):
         '''
@@ -224,8 +235,11 @@ class Link(object):
         if self._file_base:
             if number in self.pages:
                 if len(self.pages[number]) > 0:
+                    to_save = self._pickle.dumps(self.pages[number])
+                    if self._compression:
+                        to_save = zlib.compress(to_save, self._compression)
                     with open(self._file_base + str(number), 'wb') as f:
-                        self._pickle.dump(self.pages[number], f)
+                        f.write(to_save)
                 else:
                     self.page_removed(number)
                 del self.pages[number]
@@ -237,6 +251,11 @@ class Link(object):
     def _load_page_from_disk(self, number):
         if self._file_base:
             with open(self._file_base + str(number), 'rb') as f:
-                self.pages[number] = self._pickle.load(f)
+                to_load = f.read()
+            try:
+                to_load = zlib.decompress(to_load)
+            except zlib.error:
+                pass
+            self.pages[number] = self._pickle.loads(to_load)
             self._queue.append(number)
             remove(self._file_base + str(number))

@@ -9,13 +9,13 @@ class _Cached:
     f = None
     c = None
 
-    def __init__(self, function, file_basename=None, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink")):
+    def __init__(self, function, file_basename=None, size_limit=1024, max_pages=16, file_location=join(expanduser("~"), ".DriveLink"), compression_ratio=0):
         for n in list(n for n in set(dir(function)) - set(dir(self)) if n != '__class__'):
             setattr(self, n, getattr(function, n))
         if file_basename is None:
             file_basename = function.__name__
         self.f = function
-        self.c = Dict(file_basename, size_limit, max_pages, file_location)
+        self.c = Dict(file_basename, size_limit, max_pages, file_location, compression_ratio)
 
     def __call__(self, *args, **kwargs):
         i = str(args) + str(kwargs)

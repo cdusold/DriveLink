@@ -53,6 +53,21 @@ def test_string_funcs():
     assert repr(d).startswith("Dict(")
     assert repr(d).endswith(".DriveLink')")
 
+def test_change_compression():
+    d = Dict("testChangeCompression", 1, 1, compression_ratio=0)
+    d[0] = 1
+    d[1] = "c"
+    d[2] = 3.4
+    d.close()
+    with Dict("testChangeCompression", 1, 1, compression_ratio=-1) as d:
+        assert d[0] == 1
+        assert d[1] == "c"
+        assert d[2] == 3.4
+    with Dict("testChangeCompression", 1, 1, compression_ratio=9) as d:
+        assert d[0] == 1
+        assert d[1] == "c"
+        assert d[2] == 3.4
+
 
 if __name__ == '__main__':
     freeze_support()

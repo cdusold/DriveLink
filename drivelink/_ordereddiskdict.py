@@ -18,6 +18,10 @@ class OrderedDict(Link, MutableMapping):
         self._total = set()
         super(OrderedDict, self).__init__(file_basename, size_limit, max_pages, file_location, compression_ratio)
 
+    def copy_from(self, other):
+        for key in other:
+            self[key] = other[key]
+
     def load_index(self):
         other_values = super(OrderedDict, self).load_index()
         if other_values is None:
@@ -29,11 +33,8 @@ class OrderedDict(Link, MutableMapping):
                 pass
 
     def open_page(self, k):
-        try:
-            if k in self._total:
-                self._load_page_from_disk(k)
-        except:
-            pass
+        if k in self._total:
+            self._load_page_from_disk(k)
         if k not in self.pages:
             self.pages[k] = {}
             self._total.add(k)

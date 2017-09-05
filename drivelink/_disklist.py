@@ -48,6 +48,10 @@ class List(Link, MutableSequence):
         self._number_of_pages = 0
         super(List, self).__init__(file_basename, size_limit, max_pages, file_location, compression_ratio)
 
+    def copy_from(self, other):
+        for value in other:
+            self.append(value)
+
     def load_index(self):
         other_values = super(List, self).load_index()
         if other_values is None:

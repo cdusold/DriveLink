@@ -24,6 +24,21 @@ def test_init():
     OrderedDict("testOrderedDictInit", 1, 1)
 
 
+def test_change_settings():
+    with OrderedDict("testOrderedDictChangeSettings", 1, 1) as d:
+        d[0] = 1
+        d[1] = "c"
+        d[2] = 3.4
+    with OrderedDict("testOrderedDictChangeSettings", 2, 2) as d:
+        assert d[0] == 1
+        assert d[1] == "c"
+        assert d[2] == 3.4
+    with OrderedDict("testOrderedDictChangeSettings", 1, 1) as d:
+        assert d[0] == 1
+        assert d[1] == "c"
+        assert d[2] == 3.4
+
+
 def test_guarantee_page():
     with OrderedDict("testOrderedDictGuaranteePage", 1, 1) as d:
         d[0] = 1

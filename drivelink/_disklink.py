@@ -2,8 +2,8 @@ try:
     import cPickle as pickle
 except:
     import pickle
-from os.path import expanduser, join
-from os import remove, makedirs
+from os.path import expanduser, join, split
+from os import remove, makedirs, rename
 from glob import glob
 import atexit
 import zlib
@@ -77,8 +77,48 @@ class Link(object):
         self._queue = []
         # Just in case, cache pickle.
         self._pickle = pickle
+        self._check_old_settings()
         self.load_index()
         atexit.register(Link.close, self)
+
+    def _check_old_settings(self):
+        """
+        This loads and saves the settings used to create the drivelink. If different
+        settings were used originally, this may conflict with the operation of the
+        link, so the values will be copied out into the new structure.
+        """
+        try:
+            with open(self._file_base + 'Set', 'rb') as f:
+                size_limit = self._pickle.load(f)
+            if size_limit != self.size_limit:
+                self._make_old_values_available(size_limit)
+        except IOError:
+            pass
+        with open(self._file_base + 'Set', 'wb') as f:
+             self._pickle.dump(self.size_limit, f)
+
+    def _make_old_values_available(self, size_limit):
+        """
+        In order to take advantage of lazy loading, it may be worth your time to
+        overload this function when you inherit and implement a recovery method yourself.
+
+        You have to implement the copy_from function to be able to use this anyway.
+        """
+        for file_name in glob(self._file_base+"*"):
+            path, name = split(file_name)
+            rename(file_name, join(path, "~"+name))
+        with type(self)(self._file_base, self.size_limit, min(4, self.max_pages), self._file_loc) as new:
+            with type(self)("~"+self._file_basename, size_limit, 1, self._file_loc, -1) as old:
+                new.copy_from(old)
+        for file_name in glob(join(self._file_loc, "~"+self._file_basename+"*")):
+            remove(file_name)
+
+    def copy_from(self, other):
+        """
+        Depending on the type of container this link is wrapping, this will transfer
+        values from a container of the same time to the new one.
+        """
+        raise NotImplementedError
 
     _stored_index = None
     def load_index(self):
@@ -128,6 +168,7 @@ class Link(object):
 
     def __exit__(self, exception_type, exception_val, trace):
         self.close()
+        del self
 
     def close(self):
         '''

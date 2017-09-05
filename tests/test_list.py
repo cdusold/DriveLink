@@ -12,6 +12,21 @@ def test_list():
         assert lst[i] == i
 
 
+def test_change_settings():
+    with List("testListChangeSettings", 1, 1) as l:
+        l.append(1)
+        l.append("c")
+        l.append(3.4)
+    with List("testListChangeSettings", 2, 2) as l:
+        assert l[0] == 1
+        assert l[1] == "c"
+        assert l[2] == 3.4
+    with List("testListChangeSettings", 1, 1) as l:
+        assert l[0] == 1
+        assert l[1] == "c"
+        assert l[2] == 3.4
+
+
 def test_init():
     with pytest.raises(ValueError) as excinfo:
         List("testListInit", 0)

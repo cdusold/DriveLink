@@ -75,6 +75,7 @@ class Link(object):
         self._compression = compression_ratio
         self._length = 0
         self._queue = []
+        self.page_hashes = {}
         # Just in case, cache pickle.
         self._pickle = pickle
         self._check_old_settings()
@@ -95,7 +96,7 @@ class Link(object):
         except IOError:
             pass
         with open(self._file_base + 'Set', 'wb') as f:
-             self._pickle.dump(self.size_limit, f)
+            self._pickle.dump(self.size_limit, f)
 
     def _make_old_values_available(self, size_limit):
         """
@@ -104,13 +105,13 @@ class Link(object):
 
         You have to implement the copy_from function to be able to use this anyway.
         """
-        for file_name in glob(self._file_base+"*"):
+        for file_name in glob(self._file_base + "*"):
             path, name = split(file_name)
-            rename(file_name, join(path, "~"+name))
+            rename(file_name, join(path, "~" + name))
         with type(self)(self._file_base, self.size_limit, min(4, self.max_pages), self._file_loc) as new:
-            with type(self)("~"+self._file_basename, size_limit, 1, self._file_loc, -1) as old:
+            with type(self)("~" + self._file_basename, size_limit, 1, self._file_loc, -1) as old:
                 new.copy_from(old)
-        for file_name in glob(join(self._file_loc, "~"+self._file_basename+"*")):
+        for file_name in glob(join(self._file_loc, "~" + self._file_basename + "*")):
             remove(file_name)
 
     def copy_from(self, other):
@@ -121,6 +122,7 @@ class Link(object):
         raise NotImplementedError
 
     _stored_index = None
+
     def load_index(self):
         """
         This base implementation loads the number of entries in the collection and
@@ -186,6 +188,7 @@ class Link(object):
         Ensures the page is available.
         """
         if k not in self.pages:
+            self.page_hashes[k] = None
             self.open_page(k)
         while len(self._queue) > self.max_pages:
             if self._queue[0] == k:
@@ -270,17 +273,25 @@ class Link(object):
         """
         raise NotImplementedError
 
+    def page_removed(self):
+        """
+        Handles index updating when a page is removed.
+        """
+        NotImplementedError
+
     def _save_page_to_disk(self, number):
         self.store_index()
         if self._file_base:
             if number in self.pages:
                 if len(self.pages[number]) > 0:
                     to_save = self._pickle.dumps(self.pages[number])
-                    if self._compression:
-                        to_save = zlib.compress(to_save, self._compression)
-                    with open(self._file_base + str(number), 'wb') as f:
-                        f.write(to_save)
+                    if self.page_hashes[number] != hash(to_save):
+                        if self._compression:
+                            to_save = zlib.compress(to_save, self._compression)
+                        with open(self._file_base + str(number), 'wb') as f:
+                            f.write(to_save)
                 else:
+                    remove(self._file_base + str(number))
                     self.page_removed(number)
                 del self.pages[number]
             for i in range(len(self._queue)):
@@ -297,5 +308,6 @@ class Link(object):
             except zlib.error:
                 pass
             self.pages[number] = self._pickle.loads(to_load)
+            on_disk = self._pickle.dumps(self.pages[number])
+            self.page_hashes[number] = hash(on_disk)
             self._queue.append(number)
-            remove(self._file_base + str(number))

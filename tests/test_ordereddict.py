@@ -68,6 +68,7 @@ def test_save():
         assert d[1] == "c"
         assert d[2] == 3.4
 
+
 def test_contains():
     with OrderedDict("testOrderedDictContains", 1, 1) as d:
         d[0] = 1
@@ -79,6 +80,18 @@ def test_contains():
         assert 3 not in d
         assert 4 not in d
         assert 5 not in d
+
+
+def test_save_page():
+    with OrderedDict("testOrderedDictSavePage", 1, 1) as d:
+        d[0] = 1
+        d[1] = "c"
+        d[2] = 3.4
+        assert d[0] == 1
+        assert os.path.exists(d._file_base + '0')  # File should still exist.
+        os.remove(d._file_base + '0')
+        assert d[1] == "c"
+        assert not os.path.exists(d._file_base + '0')  # File should not exist.
 
 
 if __name__ == '__main__':

@@ -76,6 +76,10 @@ def test_insert():
     l.insert(2, 2)
     for i in range(4):
         assert l[i] == i
+    l = List("testInsert", 2, 2)
+    l.insert(1,-1)
+    assert l[1] == -1
+    assert l[2] == 1
 
 
 def test_delete():
@@ -93,6 +97,20 @@ def test_reverse():
     l.extend([i for i in reversed(range(10))])
     for i, v in enumerate(reversed(l)):
         assert i == v
+    for i in range(1,11):
+        assert l[-i] == i-1
+
+def test_contains():
+    with List("testListContains", 1, 1) as l:
+        l.append(1)
+        l.append("c")
+        l.append(3.4)
+        assert 1 in l
+        assert "c" in l
+        assert 3.4 in l
+        assert 2 not in l
+        assert "d" not in l
+        assert 3.3 not in l
 
 
 if __name__ == '__main__':

@@ -243,11 +243,10 @@ class Link(object):
         self._length -= 1
 
     def __contains__(self, item):
-        try:
-            i, k = self._finditem(item)
-        except:
-            return False
-        return k in self.pages[i]
+        for page in self._iterpages():
+            if item in page:
+                return True
+        return False
 
     def _iterpages(self):
         """

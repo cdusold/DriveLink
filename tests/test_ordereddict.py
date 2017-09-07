@@ -68,6 +68,18 @@ def test_save():
         assert d[1] == "c"
         assert d[2] == 3.4
 
+def test_contains():
+    with OrderedDict("testOrderedDictContains", 1, 1) as d:
+        d[0] = 1
+        d[1] = "c"
+        d[2] = 3.4
+        assert 0 in d
+        assert 1 in d
+        assert 2 in d
+        assert 3 not in d
+        assert 4 not in d
+        assert 5 not in d
+
 
 if __name__ == '__main__':
     freeze_support()

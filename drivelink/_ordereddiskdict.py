@@ -52,6 +52,13 @@ class OrderedDict(Link, MutableMapping):
         for k in list(self._total):
             yield k
 
+    def __contains__(self, item):
+        try:
+            i, k = self._finditem(item)
+        except:
+            return False
+        return k in self.pages[i]
+
     def page_removed(self, number):
         self._total.remove(number)
 

@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="DriveLink",
-    version="0.2.1.1",
+    version=read("VERSION").strip(),
     author="Chris Dusold",
     author_email="DriveLink@ChrisDusold.com",
     description=("A set of memory conserving data structures."),

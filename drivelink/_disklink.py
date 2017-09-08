@@ -188,7 +188,6 @@ class Link(object):
         Ensures the page is available.
         """
         if k not in self.pages:
-            self.page_hashes[k] = None
             self.open_page(k)
         while len(self._queue) > self.max_pages:
             if self._queue[0] == k:
@@ -285,13 +284,18 @@ class Link(object):
             if number in self.pages:
                 if len(self.pages[number]) > 0:
                     to_save = self._pickle.dumps(self.pages[number])
-                    if self.page_hashes[number] != hash(to_save):
+                    if self.page_hashes.get(number) != hash(to_save):
                         if self._compression:
                             to_save = zlib.compress(to_save, self._compression)
                         with open(self._file_base + str(number), 'wb') as f:
                             f.write(to_save)
                 else:
-                    remove(self._file_base + str(number))
+                    try:
+                        remove(self._file_base + str(number))
+                    except OSError as e:
+                        if e.errno != 2:
+                            raise
+                        pass
                     self.page_removed(number)
                 del self.pages[number]
             for i in range(len(self._queue)):

@@ -60,7 +60,7 @@ copyright = u'2017, Chris Dusold'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = open(os.path.join(os.path.dirname(__file__), fname)).read().strip()
+release = open(os.path.join(os.path.dirname(__file__), '..', "VERSION")).read().strip()
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
 

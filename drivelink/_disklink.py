@@ -90,9 +90,11 @@ class Link(object):
         """
         try:
             with open(self._file_base + 'Set', 'rb') as f:
-                size_limit = self._pickle.load(f)
-            if size_limit != self.size_limit:
-                self._make_old_values_available(size_limit)
+                old_settings = f.read()
+            size_limit = self._pickle.loads(old_settings)
+            if size_limit == self.size_limit:
+                return
+            self._make_old_values_available(size_limit)
         except IOError:
             pass
         with open(self._file_base + 'Set', 'wb') as f:

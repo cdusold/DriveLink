@@ -19,6 +19,9 @@ def test_init():
     with pytest.raises(ValueError) as excinfo:
         OrderedDict("testOrderedDictInit", 1, 0)
     excinfo.match(".* in RAM.*")
+    with pytest.raises(IOError) as excinfo:
+        OrderedDict("",1,1,"/")
+    assert excinfo.value.errno == 13
     with OrderedDict("testOrderedDictInit", 1, 1):
         pass
     OrderedDict("testOrderedDictInit", 1, 1)
@@ -92,6 +95,8 @@ def test_save_page():
         os.remove(d._file_base + '0')
         assert d[1] == "c"
         assert not os.path.exists(d._file_base + '0')  # File should not exist.
+        with pytest.raises(IOError):
+            assert d[0] != 1
 
 
 if __name__ == '__main__':

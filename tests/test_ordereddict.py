@@ -21,7 +21,7 @@ def test_init():
     excinfo.match(".* in RAM.*")
     with pytest.raises(IOError) as excinfo:
         OrderedDict("",1,1,"/")
-    assert excinfo.value.errno == 13
+    assert excinfo.value.errno == 13 or excinfo.value[0][0] == 13
     with OrderedDict("testOrderedDictInit", 1, 1):
         pass
     OrderedDict("testOrderedDictInit", 1, 1)

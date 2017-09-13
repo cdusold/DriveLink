@@ -19,6 +19,9 @@ def test_init():
     with pytest.raises(ValueError) as excinfo:
         Dict("testDictInit", 1, 0)
     excinfo.match(".* in RAM.*")
+    with pytest.raises(OSError) as excinfo:
+        Dict("",1,1,"/New/")
+    assert excinfo.value.errno == 13 or excinfo.value[0][0] == 13
     with Dict("testDictInit", 1, 1):
         pass
     Dict("testDictInit", 1, 1)

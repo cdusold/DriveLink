@@ -3,6 +3,7 @@ from os.path import expanduser, join
 from glob import glob
 
 from drivelink import Link
+from drivelink.hash import hash
 
 
 class _page(dict):

@@ -8,6 +8,8 @@ from glob import glob
 import atexit
 import zlib
 
+from drivelink.hash import hash
+
 
 class Link(object):
     """

@@ -20,7 +20,7 @@ setup(
     license=read("LICENSE"),
     keywords="memory",
     url="http://drivelink.rtfd.org/",
-    packages=['drivelink', 'tests'],
+    packages=['drivelink', 'drivelink.hash', 'tests'],
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
